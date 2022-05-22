@@ -1,22 +1,30 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import Head from './head'
+
 // import wave from '../assets/images/wave.jpg'
 
 const Home = () => {
-  const [counter, setCounterNew] = useState(0)
+  const [category, setCategory] = useState('')
 
   return (
     <div>
-      <Head title="Dashboard" />
-      <img alt="wave" src="images/wave.jpg" />
-      <button type="button" onClick={() => setCounterNew(counter + 1)}>
-        updateCounter
-      </button>
-      <div> Hello World Dashboard {counter} </div>
+      <Head title="Home" />
+      <div>
+        <input
+          className="border-solid border-2 border-sky-500 rounded"
+          type="text"
+          onChange={(e) => setCategory(e.target.value)}
+          value={category}
+        />
+        <Link className="border-solid border-2 border-sky-500 rounded" to={`/${category}`}>
+          Go
+        </Link>
+      </div>
     </div>
   )
 }
 
-Home.propTypes = {}
+// Home.propTypes = {}
 
 export default Home
