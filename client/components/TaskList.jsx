@@ -8,11 +8,9 @@ const TaskList = () => {
   const [list, setList] = useState([])
 
   useEffect(() => {
-    const foo = async () => {
-      const categoryList = await fetch(`/api/v1/tasks/${category}`).then((data) => data.json())
-      setList(categoryList)
-    }
-    foo()
+    fetch(`/api/v1/tasks/${category}`)
+      .then((result) => result.json())
+      .then((data) => setList(data))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list])
 
@@ -26,10 +24,10 @@ const TaskList = () => {
                 {task.title} {task.status}
               </div>
               <div>
-                {task.status === 'new' ? (
+                {/* {task.status === 'new' ? (
                   <Button status="in progress" id={task.taskId} category={category} />
                 ) : task.status === 'in progress' ? (
-                  <div>
+                  <div className="flex">
                     <Button status="blocked" id={task.taskId} category={category} />
                     <Button status="done" id={task.taskId} category={category} />
                   </div>
@@ -37,6 +35,18 @@ const TaskList = () => {
                   <Button status="in progress" id={task.taskId} category={category} />
                 ) : (
                   <div />
+                )} */}
+                {task.status === 'new' && (
+                  <Button status="in progress" id={task.taskId} category={category} />
+                )}
+                {task.status === 'in progress' && (
+                  <div className="flex">
+                    <Button status="blocked" id={task.taskId} category={category} />
+                    <Button status="done" id={task.taskId} category={category} />
+                  </div>
+                )}
+                {task.status === 'blocked' && (
+                  <Button status="in progress" id={task.taskId} category={category} />
                 )}
               </div>
             </li>

@@ -1,8 +1,8 @@
 import React from 'react'
 
 const Button = ({ status, id, category }) => {
-  const onClick = async () => {
-    await fetch(`/api/v1/tasks/${category}/${id}`, {
+  const onClick = () => {
+    fetch(`/api/v1/tasks/${category}/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -12,6 +12,7 @@ const Button = ({ status, id, category }) => {
       })
     })
   }
+
   return (
     <div>
       <button
