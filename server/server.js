@@ -76,28 +76,26 @@ server.get('/api/v1/tasks/:category/:timespan', async (req, res) => {
   const week = 7 * 1000 * 60 * 60 * 24
   const month = 30 * 1000 * 60 * 60 * 24
 
-  const period = await read(category).then((result) => {
-    const timespanPeriod = []
-    for (let i = 0; i < result.length; i += 1) {
+  const timespanCondition = (time, item) => {
+    return +new Date() - time < item._createdAt
+  }
+
+  const period = await read(category).then((tasksList) => {
+    let timespanPeriod = []
+    for (let i = 0; i < tasksList.length; i += 1) {
       if (timespan === 'day') {
-        if (+new Date() - day < result[i]._createdAt) {
-          timespanPeriod.push(result[i])
+        if (timespanCondition(day, tasksList[i])) {
+          timespanPeriod = [...timespanPeriod, tasksList[i]]
         }
       }
       if (timespan === 'week') {
-        if (
-          +new Date() - week < result[i]._createdAt &&
-          +new Date() - day >= result[i]._createdAt
-        ) {
-          timespanPeriod.push(result[i])
+        if (timespanCondition(week, tasksList[i]) && timespanCondition(day, tasksList[i])) {
+          timespanPeriod = [...timespanPeriod, tasksList[i]]
         }
       }
       if (timespan === 'month') {
-        if (
-          +new Date() - month < result[i]._createdAt &&
-          +new Date() - week >= result[i]._createdAt
-        ) {
-          timespanPeriod.push(result[i])
+        if (timespanCondition(month, tasksList[i]) && timespanCondition(week, tasksList[i])) {
+          timespanPeriod = [...timespanPeriod, tasksList[i]]
         }
       }
     }
@@ -148,15 +146,14 @@ server.post('/api/v1/tasks/:category', async (req, res) => {
 
 server.patch('/api/v1/tasks/:category/:id', async (req, res) => {
   const { category, id } = req.params
-  console.log(category, id)
-
   const { status } = req.body
-  console.log(status)
+
+  const statuses = ['done', 'new', 'in progress', 'blocked']
+  const condition = statuses.some((it) => it === status)
 
   const updatedTasks = await read(category)
     .then((result) => {
-      const statuses = ['done', 'new', 'in progress', 'blocked']
-      if (statuses.some((it) => it === status)) {
+      if (condition) {
         const task = result.find((it) => it.taskId === id)
         const updatedTask = { ...task, status }
         const otherTasks = result.filter((it) => it.taskId !== id)

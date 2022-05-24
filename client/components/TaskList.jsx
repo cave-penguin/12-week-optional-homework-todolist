@@ -1,21 +1,29 @@
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import Button from './button'
 
 const TaskList = () => {
   const { category } = useParams()
   const [list, setList] = useState([])
 
+  const updateTaskById = (id, status) => {
+    const updatedList = list.map((task) => (task.taskId === id ? { ...task, status } : task))
+    setList(updatedList)
+  }
+
   useEffect(() => {
     fetch(`/api/v1/tasks/${category}`)
       .then((result) => result.json())
-      .then((data) => setList(data))
+      .then((it) => setList(it))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [list])
+  }, [])
 
   return (
     <div>
+      <Link to="/">Back</Link>
+      <div>{category}</div>
+
       <ol>
         {list.map((task) => {
           return (
@@ -24,29 +32,37 @@ const TaskList = () => {
                 {task.title} {task.status}
               </div>
               <div>
-                {/* {task.status === 'new' ? (
-                  <Button status="in progress" id={task.taskId} category={category} />
-                ) : task.status === 'in progress' ? (
-                  <div className="flex">
-                    <Button status="blocked" id={task.taskId} category={category} />
-                    <Button status="done" id={task.taskId} category={category} />
-                  </div>
-                ) : task.status === 'blocked' ? (
-                  <Button status="in progress" id={task.taskId} category={category} />
-                ) : (
-                  <div />
-                )} */}
                 {task.status === 'new' && (
-                  <Button status="in progress" id={task.taskId} category={category} />
+                  <Button
+                    updateList={updateTaskById}
+                    status="in progress"
+                    id={task.taskId}
+                    category={category}
+                  />
                 )}
                 {task.status === 'in progress' && (
                   <div className="flex">
-                    <Button status="blocked" id={task.taskId} category={category} />
-                    <Button status="done" id={task.taskId} category={category} />
+                    <Button
+                      updateList={updateTaskById}
+                      status="blocked"
+                      id={task.taskId}
+                      category={category}
+                    />
+                    <Button
+                      updateList={updateTaskById}
+                      status="done"
+                      id={task.taskId}
+                      category={category}
+                    />
                   </div>
                 )}
                 {task.status === 'blocked' && (
-                  <Button status="in progress" id={task.taskId} category={category} />
+                  <Button
+                    updateList={updateTaskById}
+                    status="in progress"
+                    id={task.taskId}
+                    category={category}
+                  />
                 )}
               </div>
             </li>

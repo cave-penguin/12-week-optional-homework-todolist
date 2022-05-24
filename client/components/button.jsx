@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Button = ({ status, id, category }) => {
+const Button = ({ status, id, category, updateList }) => {
   const onClick = () => {
     fetch(`/api/v1/tasks/${category}/${id}`, {
       method: 'PATCH',
@@ -11,6 +11,7 @@ const Button = ({ status, id, category }) => {
         status
       })
     })
+    updateList(id, status)
   }
 
   return (
