@@ -1,7 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import Button from './button'
+// import Button from './button'
+import Task from './Task'
+import NewTaskInput from './NewTaskInput'
 
 const TaskList = () => {
   const { category } = useParams()
@@ -10,6 +12,10 @@ const TaskList = () => {
   const updateTaskById = (id, status) => {
     const updatedList = list.map((task) => (task.taskId === id ? { ...task, status } : task))
     setList(updatedList)
+  }
+
+  const updatedTasksList = (newList = []) => {
+    setList(newList)
   }
 
   useEffect(() => {
@@ -21,54 +27,13 @@ const TaskList = () => {
 
   return (
     <div>
-      <Link to="/">Back</Link>
+      <Link to="/">back</Link>
       <div>{category}</div>
-
-      <ol>
-        {list.map((task) => {
-          return (
-            <li className="flex" key={task.taskId}>
-              <div className="mx-2 ">
-                {task.title} {task.status}
-              </div>
-              <div>
-                {task.status === 'new' && (
-                  <Button
-                    updateList={updateTaskById}
-                    status="in progress"
-                    id={task.taskId}
-                    category={category}
-                  />
-                )}
-                {task.status === 'in progress' && (
-                  <div className="flex">
-                    <Button
-                      updateList={updateTaskById}
-                      status="blocked"
-                      id={task.taskId}
-                      category={category}
-                    />
-                    <Button
-                      updateList={updateTaskById}
-                      status="done"
-                      id={task.taskId}
-                      category={category}
-                    />
-                  </div>
-                )}
-                {task.status === 'blocked' && (
-                  <Button
-                    updateList={updateTaskById}
-                    status="in progress"
-                    id={task.taskId}
-                    category={category}
-                  />
-                )}
-              </div>
-            </li>
-          )
-        })}
-      </ol>
+      <NewTaskInput updatedTasksList={updatedTasksList} category={category} />
+      <ul>
+        <Task list={list} updateList={updateTaskById} category={category} />
+      </ul>
+      {/* <NewTaskInput updatedTasksList={updatedTasksList} category={category} /> */}
     </div>
   )
 }

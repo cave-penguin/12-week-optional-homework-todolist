@@ -120,11 +120,11 @@ server.get('/api/v1/tasks/:category/:timespan', async (req, res) => {
 server.post('/api/v1/tasks/:category', async (req, res) => {
   const { category } = req.params
   const { body } = req
+
   const newBody = [
     {
-      ...body,
       taskId: shortid.generate(),
-      title: req.body.title,
+      title: body.title,
       status: 'new',
       _isDeleted: false,
       _createdAt: +new Date(),
@@ -138,8 +138,8 @@ server.post('/api/v1/tasks/:category', async (req, res) => {
       return newTasksObj
     })
     .catch(async () => {
-      await write(category, newBody)
-      return newBody
+      await write(category, [])
+      return []
     })
   res.json(tasks)
 })
