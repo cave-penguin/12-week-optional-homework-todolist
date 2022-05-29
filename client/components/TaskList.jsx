@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-// import Button from './button'
 import Task from './Task'
 import NewTaskInput from './NewTaskInput'
 
@@ -33,7 +32,6 @@ const TaskList = () => {
       <ul>
         <Task list={list} updateList={updateTaskById} category={category} />
       </ul>
-      {/* <NewTaskInput updatedTasksList={updatedTasksList} category={category} /> */}
     </div>
   )
 }

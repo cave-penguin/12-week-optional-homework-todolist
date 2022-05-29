@@ -154,10 +154,12 @@ server.patch('/api/v1/tasks/:category/:id', async (req, res) => {
   const updatedTasks = await read(category)
     .then((result) => {
       if (condition) {
-        const task = result.find((it) => it.taskId === id)
-        const updatedTask = { ...task, status }
-        const otherTasks = result.filter((it) => it.taskId !== id)
-        const newTasks = [...otherTasks, updatedTask]
+        const newTasks = result.map((task) => {
+          if (it.taskId === id) {
+            return { ...task, status }
+          }
+          return it
+        })
         write(category, newTasks)
         return newTasks
       }
@@ -175,10 +177,12 @@ server.delete('/api/v1/tasks/:category/:id', async (req, res) => {
   const { category, id } = req.params
   const tasks = await read(category)
     .then((result) => {
-      const task = result.find((it) => it.taskId === id)
-      const otherTasks = result.filter((it) => it.taskId !== id)
-      const deletedTask = { ...task, _isDeleted: true }
-      return [...otherTasks, deletedTask]
+      return result.map((task) => {
+        if (it.taskId === id) {
+          return { ...task, _isDeleted: true }
+        }
+        return task
+      })
     })
     .catch((err) => {
       console.log(err)
