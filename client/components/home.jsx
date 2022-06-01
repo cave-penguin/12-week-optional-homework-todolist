@@ -5,7 +5,8 @@ import Head from './head'
 const Home = () => {
   const [category, setCategory] = useState('')
   const [categories, setCategories] = useState([])
-  console.log(categories)
+  const [isActive, setIsActive] = useState(false)
+  const [newCategory, setNewCategory] = useState('')
 
   const handleClear = (e) => {
     e.preventDefault()
@@ -24,6 +25,21 @@ const Home = () => {
     handleClear(e)
   }
 
+  const changeCategory = () => {
+    fetch(`api/v1/rename/${category}`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: { newName: JSON.stringify(newCategory) }
+    })
+    fetch('/api/v1/categories')
+      .then((res) => res.json())
+      .then((item) => setCategories(item))
+      .catch((err) => console.log(err))
+    setIsActive(!isActive)
+  }
+
   useEffect(() => {
     const getCategories = async () => {
       const data = await fetch('/api/v1/categories')
@@ -39,14 +55,14 @@ const Home = () => {
       <Head title="Home" />
       <div>
         <input
-          className="border-solid border-2 border-sky-500 rounded"
+          className=" m-2 border-solid border-2 border-sky-500 rounded"
           type="text"
           onChange={(e) => setCategory(e.target.value)}
           value={category}
         />
         <button
           type="button"
-          className="border-solid border-2 border-sky-500 rounded"
+          className="m-2 border-solid border-2 border-sky-500 rounded"
           onClick={onClick}
         >
           Add
@@ -56,11 +72,36 @@ const Home = () => {
         <ol>
           {categories?.map((item) => {
             return (
-              <div key={item}>
-                <li>
-                  <Link to={`/${item}`}>{item}</Link>
-                </li>
-              </div>
+              <li key={item} className="flex">
+                {isActive ? (
+                  <input
+                    className="m-2 border-solid border-2 border-sky-500 rounded"
+                    type="text"
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                  />
+                ) : (
+                  <Link className="" to={`/${item}`}>
+                    {item}
+                  </Link>
+                )}
+
+                <div>
+                  <button
+                    className="m-2 border-solid border-2 border-sky-500 rounded"
+                    type="button"
+                    onClick={changeCategory}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="m-2 border-solid border-2 border-sky-500 rounded"
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
             )
           })}
         </ol>

@@ -7,7 +7,7 @@ import sockjs from 'sockjs'
 import { renderToStaticNodeStream } from 'react-dom/server'
 import React from 'react'
 import shortid from 'shortid'
-import { readdirSync } from 'fs'
+import { readdirSync, rename } from 'fs'
 
 import cookieParser from 'cookie-parser'
 import config from './config'
@@ -155,11 +155,12 @@ server.patch('/api/v1/tasks/:category/:id', async (req, res) => {
     .then((result) => {
       if (condition) {
         const newTasks = result.map((task) => {
-          if (it.taskId === id) {
+          if (task.taskId === id) {
             return { ...task, status }
           }
-          return it
+          return task
         })
+
         write(category, newTasks)
         return newTasks
       }
@@ -197,6 +198,15 @@ const dir = `${__dirname}/tasks/`
 server.get('/api/v1/categories', (req, res) => {
   const list = readdirSync(dir).map((it) => it.replace(/\..+$/, ''))
   res.json(list)
+})
+
+server.post('api/v1/rename/:category', async (req, res) => {
+  const { category } = req.params
+  const { newName } = req.body
+  rename(`${dir}${category}.json`, `${dir}${newName}.json`, (err) => {
+    if (err) console.log(err)
+  })
+  res.json({ status: 'success', fileName: newName })
 })
 
 server.use('/api/', (req, res) => {
