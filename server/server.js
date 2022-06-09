@@ -26,6 +26,7 @@ try {
 let connections = []
 
 const port = process.env.PORT || 8090
+
 const server = express()
 
 const middleware = [
@@ -200,13 +201,13 @@ server.get('/api/v1/categories', (req, res) => {
   res.json(list)
 })
 
-server.post('api/v1/rename/:category', async (req, res) => {
+server.post('/api/v1/rename/:category', (req, res) => {
   const { category } = req.params
-  const { newName } = req.body
-  rename(`${dir}${category}.json`, `${dir}${newName}.json`, (err) => {
-    if (err) console.log(err)
+  const { name } = req.body
+  rename(`${dir}${category}.json`, `${dir}${name}.json`, (err) => {
+    if (err) console.log({ status: 'error', err })
   })
-  res.json({ status: 'success', fileName: newName })
+  res.json({ status: 'success', name })
 })
 
 server.use('/api/', (req, res) => {
